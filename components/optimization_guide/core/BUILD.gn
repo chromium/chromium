@@ -272,6 +272,7 @@ static_library("core") {
       "model_execution/on_device_model_component.cc",
       "model_execution/on_device_model_component.h",
       "model_execution/on_device_model_execution_proto_descriptors.h",
+      "model_execution/on_device_model_execution_proto_status.h",
       "model_execution/on_device_model_execution_proto_value_utils.cc",
       "model_execution/on_device_model_execution_proto_value_utils.h",
       "model_execution/on_device_model_feature_adapter.cc",
@@ -306,6 +307,8 @@ static_library("core") {
       "model_execution/simple_response_parser.h",
       "model_execution/substitution.cc",
       "model_execution/substitution.h",
+      "model_execution/value_converter.cc",
+      "model_execution/value_converter.h",
       output_proto_descriptors_cc_file,
     ]
   }

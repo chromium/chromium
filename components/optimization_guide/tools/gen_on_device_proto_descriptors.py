@@ -233,6 +233,7 @@ def GenerateProtoDescriptors(out: IO[str], messages: KnownMessages):
     includes = set(messages.GetIncludes()).union({
         'base/values.h',
         'components/optimization_guide/core/optimization_guide_util.h',
+        'components/optimization_guide/core/model_execution/value_converter.h',
     })
     for include in sorted(includes):
         out.write(f'#include "{include}"\n')
@@ -242,13 +243,13 @@ def GenerateProtoDescriptors(out: IO[str], messages: KnownMessages):
     out.write('\n')
     out.write('namespace {\n')
     _GetProtoValue.GenPrivate(out, readable_messages)
-    _SetProtoValue.GenPrivate(out, writable_messages)
+    _SetProtoValueFromString.GenPrivate(out, writable_messages)
     _ConvertValue.GenPrivate(out, writable_messages)
     out.write('}  // namespace\n\n')
     _GetProtoValue.GenPublic(out)
     _GetProtoFromAny.GenPublic(out, readable_messages)
     _BuildMessage.GenPublic(out, writable_messages)
-    _SetProtoValue.GenPublic(out)
+    _SetProtoValueFromString.GenPublic(out)
     _SetProtoFieldString(readable_messages).GenPublic(out)
     _GetProtoMessage(readable_messages).GenPublic(out)
     _GetProtoMutableMessage(readable_messages).GenPublic(out)
@@ -623,24 +624,24 @@ class _BuildMessage:
         out.write('}\n')
 
 
-class _SetProtoValue:
-    """Namespace class for SetProtoValue method builders."""
+class _SetProtoValueFromString:
+    """Namespace class for SetProtoValueFromString method builders."""
 
     @classmethod
     def GenPublic(cls, out: IO[str]):
         out.write("""
-      ProtoStatus SetProtoValue(
+      ProtoStatus SetProtoValueFromString(
           google::protobuf::MessageLite* msg,
           const proto::ProtoField& proto_field,
           const std::string& value) {
-        return SetProtoValue(msg, proto_field, value, /*index=*/0);
+        return SetProtoValueFromString(msg, proto_field, value, /*index=*/0);
       }
     """)
 
     @classmethod
     def GenPrivate(cls, out: IO[str], messages: list[Message]):
         out.write("""
-      ProtoStatus SetProtoValue(
+      ProtoStatus SetProtoValueFromString(
           google::protobuf::MessageLite* msg,
           const proto::ProtoField& proto_field,
           const std::string& value,
@@ -658,7 +659,9 @@ class _SetProtoValue:
 
     @classmethod
     def _IsSupported(cls, field: Field):
-        return field.type == Type.STRING and not field.is_repeated
+        # TODO(https://crbug.com/383761415): Implement the enum case.
+        return (not field.is_repeated
+                and field.type not in (Type.MESSAGE, Type.ENUM))
 
     @classmethod
     def _IfMsg(cls, out: IO[str], msg: Message):
@@ -679,7 +682,20 @@ class _SetProtoValue:
     @classmethod
     def _FieldCase(cls, out: IO[str], msg: Message, field: Field):
         out.write(f'    case {field.tag_number}: {{\n')
-        out.write(f'      typed_msg->set_{field.name}(value);\n')
+        if field.type == Type.STRING:
+            out.write(f'      typed_msg->set_{field.name}(value);\n')
+        else:
+            out.write('      using FieldType = '
+                      f'decltype(typed_msg->{field.name}());\n')
+            out.write(
+                '      base::expected<FieldType, ProtoStatus> result =\n'
+                '          ValueConverter<FieldType>::TryConvertFromString('
+                'value);\n')
+            out.write('      if (!result.has_value()) {\n')
+
+            out.write('        return ProtoStatus::kError;\n')
+            out.write('      }\n')
+            out.write(f'      typed_msg->set_{field.name}(result.value());\n')
         out.write('      return ProtoStatus::kOk;\n')
         out.write('    }\n')
 

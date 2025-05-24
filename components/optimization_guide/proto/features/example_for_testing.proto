@@ -43,7 +43,6 @@ message ExampleForTestingRequest {
 
 message ExampleForTestingResponse {
   bool bool_value = 1;
-
   string string_value = 2;
 
   enum ExampleEnum {
@@ -52,6 +51,13 @@ message ExampleForTestingResponse {
   }
 
   ExampleEnum enum_value = 3;
+
+  float float_value = 4;
+  double double_value = 5;
+  int32 int32_value = 6;
+  uint32 uint32_value = 7;
+  int64 int64_value = 8;
+  uint64 uint64_value = 9;
 }
 
 message ExampleForTestingData {
